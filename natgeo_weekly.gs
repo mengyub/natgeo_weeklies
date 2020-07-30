@@ -2,6 +2,7 @@ function RunAll() {
   // Run both repoorts
   RunWeeklySalesReport()
   RunWeeklyReconciliationReport()
+  RunWeeklyDepartureReport()
 }
 
 
@@ -21,7 +22,6 @@ function RunWeeklySalesReport() {
     for (var i = row_del.length - 1; i>=0; i--) {
       dataSheet.deleteRow(row_del[i]); 
     }
-    // var newsheet = ss.insertSheet('NEWDATA'); // create a 'NEWDATA' sheet to store imported data
     // loop through csv data array and insert (append) as rows into 'NEWDATA' sheet
     for ( var i=0, lenCsv=csvData.length; i<lenCsv; i++ ) {
       dataSheet.getRange(i+1, 1, 1, csvData[i].length).setValues(new Array(csvData[i]));
@@ -56,7 +56,6 @@ function RunWeeklyReconciliationReport() {
     for (var i = row_del.length - 1; i>=0; i--) {
       dataSheet.deleteRow(row_del[i]); 
     }
-    // var newsheet = ss.insertSheet('NEWDATA'); // create a 'NEWDATA' sheet to store imported data
     // loop through csv data array and insert (append) as rows into 'NEWDATA' sheet
     for ( var i=0, lenCsv=csvData.length; i<lenCsv; i++ ) {
       dataSheet.getRange(i+1, 1, 1, csvData[i].length).setValues(new Array(csvData[i]));
@@ -76,12 +75,12 @@ function CopyWeeklyReconciliationReport() {
 
 
 // WEEKLY DEPARTURES
-function RunWeeklyReconciliationReport() {
+function RunWeeklyDepartureReport() {
   var fSource = DriveApp.getFolderById('13tDzrmLj1XKJ0W6d9U2YxyKSPDn9C6IW'); // id of folder where csv reports are saved
-  var fi = fSource.getFilesByName('weekly_reconciliation.csv'); // latest report file
-  var ss = SpreadsheetApp.openById('1_EIJDgkDtxuEqfQFqUMQpF3oMRf8ng4INwBmJAvdXJA'); // id of spreadsheet that holds the data to be updated with new report data
+  var fi = fSource.getFilesByName('weekly_departure.csv'); // latest report file
+  var ss = SpreadsheetApp.openById('1dErQb_hrsaoJ0OH7D6AbIlrP9t8vn8AJLuFdDG1h28w'); // id of spreadsheet that holds the data to be updated with new report data
 
-  if ( fi.hasNext() ) { // proceed if "weekly_reconciliation.csv" file exists in the reports folder
+  if ( fi.hasNext() ) { // proceed if "weekly_departure.csv" file exists in the reports folder
     var file = fi.next();
     var csv = file.getBlob().getDataAsString();
     var csvData = CSVToArray(csv); // see below for CSVToArray function
@@ -91,21 +90,20 @@ function RunWeeklyReconciliationReport() {
     for (var i = row_del.length - 1; i>=0; i--) {
       dataSheet.deleteRow(row_del[i]); 
     }
-    // var newsheet = ss.insertSheet('NEWDATA'); // create a 'NEWDATA' sheet to store imported data
     // loop through csv data array and insert (append) as rows into 'NEWDATA' sheet
     for ( var i=0, lenCsv=csvData.length; i<lenCsv; i++ ) {
       dataSheet.getRange(i+1, 1, 1, csvData[i].length).setValues(new Array(csvData[i]));
     }
     // rename the report.csv file so it is not processed on next scheduled run
-    file.setName("reconciliation data imported on "+(new Date().toString())+".csv");
+    file.setName("departure data imported on "+(new Date().toString())+".csv");
     SpreadsheetApp.flush();
-    CopyWeeklyReconciliationReport();
+    CopyWeeklyDepartureReport();
   }
 };
 
-function CopyWeeklyReconciliationReport() {
+function CopyWeeklyDepartureReport() {
   var ReportDestFolder = DriveApp.getFolderById('11jwq_eL5pOtspMN9WDUmxJJ3uUuKUex1'); 
-  var ReportTemplate = DriveApp.getFileById('1_EIJDgkDtxuEqfQFqUMQpF3oMRf8ng4INwBmJAvdXJA');
+  var ReportTemplate = DriveApp.getFileById('1dErQb_hrsaoJ0OH7D6AbIlrP9t8vn8AJLuFdDG1h28w');
   ReportTemplate.makeCopy("NatGeo Weekly Reconciliation Report - "+(new Date().toString()), ReportDestFolder);
 };
 
@@ -113,7 +111,6 @@ function CopyWeeklyReconciliationReport() {
 // This will parse a delimited string into an array of
 // arrays. The default delimiter is the comma, but this
 // can be overriden in the second argument.
-
 function CSVToArray( strData, strDelimiter ) {
   // Check to see if the delimiter is defined. If not,
   // then default to COMMA.
